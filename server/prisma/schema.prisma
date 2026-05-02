@@ -1,0 +1,44 @@
+// SQLite 数据库表结构
+// Prisma 会根据此文件自动生成建表语句和 TypeScript 类型
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id            String         @id @default(uuid())
+  phone         String         @unique
+  password      String         // bcrypt 哈希后的密码，不存明文
+  username      String         @default("")
+  avatar        String         @default("")
+  createdAt     DateTime       @default(now())
+  conversations Conversation[]
+}
+
+// 对话表
+model Conversation {
+  id        String    @id @default(uuid())
+  title     String    @default("新对话")
+  isPinned  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+}
+
+// 消息表
+model Message {
+  id             String       @id @default(uuid())
+  role           String       // "user" | "assistant"
+  content        String
+  createdAt      DateTime     @default(now())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
