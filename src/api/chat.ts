@@ -6,6 +6,7 @@
 import type { Message, ChatRequest, ChatResponse } from '@/types'
 import { apiGet, apiPost, apiPut, apiDelete, BASE_URL, getToken } from './client'
 import { logger } from '@/utils/logger'
+import { parseSSEStream } from '@/ai/core/StreamParser'
 
 // 后端返回的对话摘要（不含消息内容）
 interface ConversationSummary {
@@ -53,34 +54,7 @@ export const chatApi = {
     const reader = response.body?.getReader()
     if (!reader) throw new Error('浏览器不支持流式读取')
 
-    const decoder = new TextDecoder()
-    let buffer = ''
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const decoded = decoder.decode(value, { stream: true })
-        buffer += decoded
-
-        const lines = buffer.split('\n\n')
-        buffer = lines.pop() || ''
-
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i]!
-          if (!line.startsWith('data: ')) continue
-          try {
-            const data = JSON.parse(line.slice(6)) as ChatResponse
-            yield data
-          } catch (e) {
-            // 忽略解析失败的行
-          }
-        }
-      }
-    } finally {
-      reader.cancel().catch(() => {})
-    }
+    yield* parseSSEStream<ChatResponse>(reader, signal)
   },
 
   // ========== 对话 CRUD ==========

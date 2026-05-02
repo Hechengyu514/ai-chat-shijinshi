@@ -1,6 +1,8 @@
 /**
  * AI 流式对话逻辑
- * 封装 AbortController → SSE 迭代 → 流式内容累积 → 落库的全过程
+ * @deprecated 请使用 @/ai/composables/useChat 替代。
+ * 新版本通过 ChatAdapter 解耦 Pinia，内置中间件管道（重试/日志），支持 AIClient 配置。
+ * 当前保留此文件仅用于向后兼容。
  */
 import { ref } from 'vue'
 import type { Message } from '@/types'

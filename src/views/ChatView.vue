@@ -14,19 +14,27 @@ import type { Message } from '@/types'
 import { storeToRefs } from 'pinia'
 import { useAutoScroll } from '@/composables/useAutoScroll'
 import { generateId } from '@/utils/id'
-import { useChatStream } from '@/composables/useChatStream'
+import { useChat, createPiniaChatAdapter } from '@/ai'
 
 const chatStore = useChatStore()
 const { activeConversationId } = storeToRefs(chatStore)
 const { addMessage, addConversation, createConversation, getActiveConversation } = chatStore
 
-const { streamingContent, streamingMessageId, abort, stream } = useChatStream()
+const adapter = createPiniaChatAdapter()
+const {
+  streamingContent,
+  streamingMessageId,
+  isLoading,
+  send,
+  abort,
+  regenerate,
+} = useChat({ adapter })
 
 const messagesContainer = ref<HTMLElement | null>(null)
 const chatInputRef = ref<InstanceType<typeof ChatInput> | null>(null)
 
 const messages = computed(() => {
-  const activeConversation = chatStore.getActiveConversation()
+  const activeConversation = getActiveConversation()
   if (!activeConversation) return []
   return activeConversation.messages.map((m) => {
     if (m.id === streamingMessageId.value && streamingContent.value) {
@@ -38,9 +46,11 @@ const messages = computed(() => {
 
 useAutoScroll(messages, messagesContainer)
 
+// isLoading 变化时同步到 ChatInput 按钮状态
+watch(isLoading, (v) => chatInputRef.value?.setLoading(v))
+
 onMounted(async () => {
   await chatStore.syncFromServer()
-  // 仅为当前激活对话按需加载消息
   const active = getActiveConversation()
   if (active && active.messages.length === 0) {
     const full = await chatApi.fetchConversation(active.id)
@@ -52,7 +62,6 @@ onUnmounted(() => {
   abort()
 })
 
-// 切换对话时按需加载消息
 watch(activeConversationId, async (id) => {
   if (!id) return
   const conv = chatStore.conversations.find((c) => c.id === id)
@@ -91,33 +100,13 @@ const handleSendMessage = async (content: string) => {
   }
 
   addMessage(conversationId, userMessage)
-
-  await stream(conversationId, content, (v) => chatInputRef.value?.setLoading(v))
+  await send(conversationId, content)
 }
 
 const handleRegenerate = async (messageId: string) => {
   const activeConversation = getActiveConversation()
   if (!activeConversation) return
-
-  const msgIndex = activeConversation.messages.findIndex((m) => m.id === messageId)
-  if (msgIndex < 0) return
-
-  // 向前查找最近的一条用户消息（不依赖数组索引顺序假设）
-  let userMsg: Message | undefined
-  for (let i = msgIndex - 1; i >= 0; i--) {
-    if (activeConversation.messages[i]!.role === 'user') {
-      userMsg = activeConversation.messages[i]
-      break
-    }
-  }
-  if (!userMsg) return
-
-  activeConversation.messages.splice(msgIndex, 1)
-  try {
-    await stream(activeConversation.id, userMsg.content, (v) => chatInputRef.value?.setLoading(v))
-  } catch {
-    chatInputRef.value?.setLoading(false)
-  }
+  await regenerate(activeConversation.id, messageId)
 }
 </script>
 
