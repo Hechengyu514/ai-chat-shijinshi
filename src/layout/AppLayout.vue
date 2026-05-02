@@ -5,7 +5,7 @@
  * 移动端 sidebar 改为绝对定位抽屉覆盖
  */
 import { computed } from 'vue'
-import Sidebar from '@/layout/Sidebar.vue'
+import Sidebar from '@/layout/SideBar.vue'
 import SettingsDialog from '@/components/settings/SettingsDialog.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useChatStore } from '@/stores/chat'
