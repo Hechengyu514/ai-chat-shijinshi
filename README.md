@@ -25,7 +25,7 @@
 - **Markdown 渲染** — AI 回复支持代码高亮、XSS 防护（DOMPurify）
 - **用户系统** — 手机号注册/登录，JWT 鉴权，对话数据用户隔离
 - **主题切换** — 浅色/深色主题，持久化存储
-- **响应式布局** — 移动端自动折叠侧边栏，流畅过渡动画
+- **移动端适配** — 三档断点（768px / 540px / 480px），侧边栏抽屉覆盖 + 滑入动画，设置面板自适应全屏
 - **个人设置** — 头像裁剪上传、用户名修改
 - **错误处理** — 全局错误捕获、ErrorBoundary 降级 UI
 
@@ -40,6 +40,7 @@
 │   │   ├── common/         # 通用组件（ErrorBoundary/AvatarCropper/PanelDialog）
 │   │   └── settings/       # 设置面板
 │   ├── composables/        # 组合式函数（useChatStream/useMarkdown/useBreakpoint…）
+│   ├── mobile/             # 移动端适配（responsive.css + useSidebarDrawer）
 │   ├── layout/             # 布局组件（AppLayout/Sidebar）
 │   ├── router/             # 路由配置
 │   ├── stores/             # Pinia Store（chat/user/theme/settings）

@@ -10,6 +10,8 @@ body {
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--bg-color);
 }
 :root {
   /* 应用主题色 */
@@ -169,87 +171,6 @@ body {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-/* 响应式设计 */
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: 240px;
-  }
-
-  .chat-messages {
-    padding: 12px;
-  }
-
-  .message-body {
-    max-width: 85% !important;
-  }
-
-  .input-section {
-    padding: 12px;
-  }
-
-  .login-box {
-    width: 90%;
-    padding: 24px;
-  }
-
-  .settings-content {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar {
-    display: none;
-  }
-
-  .chat-messages {
-    padding: 8px;
-  }
-
-  .message-body {
-    max-width: 90% !important;
-  }
-
-  .message-avatar {
-    margin: 0 6px;
-  }
-
-  .message-avatar .el-avatar {
-    width: 32px !important;
-    height: 32px !important;
-  }
-
-  .message-content {
-    padding: 10px 14px;
-  }
-
-  .input-section {
-    padding: 8px;
-  }
-
-  .input-container {
-    padding: 8px;
-    gap: 8px;
-  }
-
-  .send-btn,
-  .stop-btn {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-  }
-
-  .top-bar {
-    padding: 0 12px;
-    height: 48px;
-  }
-
-  .main-content.collapsed {
-    padding-top: 48px;
-  }
 }
 
 /* Markdown 代码块全局样式（非 scoped，因内容是 v-html 渲染的） */

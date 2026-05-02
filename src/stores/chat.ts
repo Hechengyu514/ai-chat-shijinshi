@@ -8,6 +8,7 @@ import type { Message, Conversation } from '@/types'
 import { safeStorage, STORAGE_KEYS } from '@/utils/storage'
 import { chatApi } from '@/api/chat'
 import { logger } from '@/utils/logger'
+import { generateId } from '@/utils/id'
 
 export const useChatStore = defineStore(
   'chat',
@@ -36,7 +37,7 @@ export const useChatStore = defineStore(
     // 创建新对话（本地，使用 UUID 避免碰撞）
     const createConversation = () => {
       const newConversation: Conversation = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         title: '新对话',
         messages: [],
         createdAt: Date.now(),

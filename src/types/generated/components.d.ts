@@ -34,7 +34,6 @@ declare module 'vue' {
     ProfileSettings: typeof import('./../../components/settings/ProfileSettings.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SecuritySettings: typeof import('./../../components/settings/user/SecuritySettings.vue')['default']
     SettingsDialog: typeof import('./../../components/settings/SettingsDialog.vue')['default']
     SettingsMenu: typeof import('./../../components/settings/SettingsMenu.vue')['default']
   }

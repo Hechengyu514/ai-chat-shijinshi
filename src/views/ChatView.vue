@@ -13,6 +13,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { Message } from '@/types'
 import { storeToRefs } from 'pinia'
 import { useAutoScroll } from '@/composables/useAutoScroll'
+import { generateId } from '@/utils/id'
 import { useChatStream } from '@/composables/useChatStream'
 
 const chatStore = useChatStore()
@@ -78,7 +79,7 @@ const handleSendMessage = async (content: string) => {
   }
 
   const userMessage: Message = {
-    id: crypto.randomUUID(),
+    id: generateId(),
     role: 'user',
     content,
     timestamp: Date.now(),

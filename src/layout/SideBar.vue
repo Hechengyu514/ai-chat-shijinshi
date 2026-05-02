@@ -15,6 +15,10 @@ import { useSettings } from '@/composables/useSettings'
 
 defineOptions({ name: 'AppSidebar' })
 
+const props = defineProps<{
+  isMobile?: boolean
+}>()
+
 // 获取 Store 和 Router
 const chatStore = useChatStore()
 const userStore = useUserStore()
@@ -46,9 +50,13 @@ const emit = defineEmits<{
 
 /**
  * 创建新对话
+ * 移动端：创建后自动收起侧边栏
  */
 const createNewConversation = () => {
   deselectConversation()
+  if (props.isMobile) {
+    emit('collapse')
+  }
 }
 
 /**
@@ -129,12 +137,12 @@ const handleCollapse = () => {
 
 <style scoped>
 .sidebar {
-  width: 280px;
+  width: 100%;
   background-color: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border-color);
-  height: 100vh;
+  height: 100%;
 }
 
 .sidebar-header {
@@ -211,7 +219,6 @@ const handleCollapse = () => {
 .user-info-button {
   width: 100%;
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;

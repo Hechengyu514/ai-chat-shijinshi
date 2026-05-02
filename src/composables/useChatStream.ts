@@ -7,6 +7,7 @@ import type { Message } from '@/types'
 import { useChatStore } from '@/stores/chat'
 import { chatApi } from '@/api/chat'
 import { logger } from '@/utils/logger'
+import { generateId } from '@/utils/id'
 
 export function useChatStream() {
   const chatStore = useChatStore()
@@ -34,7 +35,7 @@ export function useChatStream() {
     }
 
     const aiMessage: Message = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       role: 'assistant',
       content: '',
       timestamp: Date.now(),

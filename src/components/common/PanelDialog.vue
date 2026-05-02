@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Close } from '@element-plus/icons-vue'
+import { useBreakpoint } from '@/composables/useBreakpoint'
 
 /**
  * 带侧边栏的对话框组件
@@ -7,29 +9,11 @@ import { Close } from '@element-plus/icons-vue'
  * @example
  * ```vue
  * <PanelDialog v-model:visible="dialogVisible" title="设置">
- *   <template #trigger>
- *     <el-button type="primary">打开设置</el-button>
- *   </template>
- *
  *   <template #sidebar>
- *     <div class="menu-list">
- *       <div
- *         class="menu-item"
- *         :class="{ active: activeTab === 'general' }"
- *         @click="activeTab = 'general'"
- *       >
- *         通用设置
- *       </div>
- *       <!-- 更多菜单项 -->
- *     </div>
+ *     <SettingsMenu v-model:active-tab="activeTab" />
  *   </template>
- *
- *   <div class="content-area">
- *     <div v-if="activeTab === 'general'">
- *       <!-- 通用设置内容 -->
- *     </div>
- *     <!-- 更多内容区域 -->
- *   </div>
+ *   <div v-if="activeTab === 'general'">通用设置内容</div>
+ *   <div v-if="activeTab === 'data'">数据管理内容</div>
  * </PanelDialog>
  * ```
  */
@@ -48,7 +32,7 @@ interface Props {
   height?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   title: '设置',
   visible: false,
   width: '720px',
@@ -58,6 +42,11 @@ withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'update:visible': [value: boolean]
 }>()
+
+const { isMobile } = useBreakpoint(768)
+
+const dialogWidth = computed(() => (isMobile.value ? '100vw' : props.width))
+const dialogHeight = computed(() => (isMobile.value ? '100vh' : props.height))
 
 // 处理关闭对话框
 const handleClose = () => {
@@ -69,7 +58,7 @@ const handleClose = () => {
   <Teleport to="body">
     <Transition name="dialog-fade">
       <div v-if="visible" class="panel-dialog-overlay" @click.self="handleClose">
-        <div class="panel-dialog" :style="{ width, height }">
+        <div class="panel-dialog" :style="{ width: dialogWidth, height: dialogHeight }">
           <!-- 对话框头部 -->
           <div class="panel-header">
             <h3 class="panel-title">{{ title }}</h3>

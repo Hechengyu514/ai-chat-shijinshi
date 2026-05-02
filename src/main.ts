@@ -10,6 +10,7 @@ import router from './router'
 import { getInitialTheme } from './stores/theme'
 
 import '@/assets/styles/global.css'
+import '@/mobile/responsive.css'
 
 const app = createApp(App)
 
