@@ -39,14 +39,17 @@ useAutoScroll(messages, messagesContainer)
 
 onMounted(async () => {
   await chatStore.syncFromServer()
-  // 同步后若当前对话无消息，从服务端加载
-  const active = getActiveConversation()
-  if (active && active.messages.length === 0) {
-    const full = await chatApi.fetchConversation(active.id)
-    if (full) {
-      active.messages = full.messages
-    }
-  }
+  // 同步后为所有无消息的对话从服务端加载消息
+  await Promise.all(
+    chatStore.conversations
+      .filter((c) => c.messages.length === 0)
+      .map(async (conv) => {
+        const full = await chatApi.fetchConversation(conv.id)
+        if (full) {
+          conv.messages = full.messages
+        }
+      }),
+  )
 })
 
 onUnmounted(() => {

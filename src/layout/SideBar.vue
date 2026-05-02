@@ -59,10 +59,10 @@ const handleMenuAction = (action: 'settings' | 'logout' | 'login') => {
   if (action === 'settings') {
     openSettings()
   } else if (action === 'logout') {
-    router.push('/login')
     logout()
     chatStore.conversations = []
     chatStore.activeConversationId = null
+    router.push('/login')
   } else if (action === 'login') {
     router.push('/login')
   }
