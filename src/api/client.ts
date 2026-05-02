@@ -7,21 +7,28 @@ import { STORAGE_KEYS } from '@/utils/storage'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
+// token 内存缓存，避免每次请求读 localStorage
+let cachedToken: string | null = null
+
 export function getToken(): string | null {
+  if (cachedToken !== null) return cachedToken
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.user)
     if (raw) {
       const parsed = JSON.parse(raw)
-      return parsed.token || null
+      cachedToken = parsed.token || null
+      return cachedToken
     }
   } catch {
     // ignore
   }
+  cachedToken = null
   return null
 }
 
 const instance = axios.create({
   baseURL: BASE_URL,
+  timeout: 10_000, // 10 秒超时
 })
 
 // 请求拦截器：自动注入 token
@@ -41,6 +48,7 @@ instance.interceptors.response.use(
       // 登录/注册接口的 401 是正常业务错误（账号未注册/密码错误），不透传拦截器
       const isAuthRequest = error.config?.url?.includes('/api/auth/')
       if (!isAuthRequest) {
+        cachedToken = null
         localStorage.removeItem(STORAGE_KEYS.user)
         window.location.href = '/login'
       }

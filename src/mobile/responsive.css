@@ -23,6 +23,7 @@
   /* ---- 聊天 ---- */
   .chat-messages {
     padding: 12px !important;
+    overflow-x: hidden !important;
   }
 
   .message-body {
@@ -37,7 +38,7 @@
   .login-box {
     max-width: 420px;
     width: calc(100% - 32px) !important;
-    padding: 24px;
+    padding: 24px !important;
   }
 
   /* ---- 设置对话框 ---- */
@@ -91,6 +92,25 @@
   .item-more-btn {
     opacity: 1 !important;
   }
+
+  /* 代码块不撑开消息气泡（flex 子项默认 min-width: auto） */
+  .message-content {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .markdown-body .code-block {
+    max-width: 100%;
+  }
+
+  .markdown-body pre {
+    max-width: 100%;
+  }
+
+  .markdown-body pre code {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* ---- 手机抽屉模式 (≤540px) ---- */
@@ -134,7 +154,7 @@
   }
 
   .message-avatar {
-    margin: 0 6px;
+    margin: 0 6px !important;
   }
 
   .message-avatar .el-avatar {
@@ -170,7 +190,7 @@
 
   /* ---- 登录 ---- */
   .login-box {
-    padding: 20px;
+    padding: 20px !important;
   }
 
   /* ---- 设置对话框 ---- */

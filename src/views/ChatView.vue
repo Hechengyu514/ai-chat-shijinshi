@@ -9,7 +9,7 @@ import ChatInput from '@/components/chat/ChatInput.vue'
 import nortonAvatar from '@/assets/images/Norton.png'
 import { useChatStore } from '@/stores/chat'
 import { chatApi } from '@/api/chat'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { Message } from '@/types'
 import { storeToRefs } from 'pinia'
 import { useAutoScroll } from '@/composables/useAutoScroll'
@@ -40,21 +40,26 @@ useAutoScroll(messages, messagesContainer)
 
 onMounted(async () => {
   await chatStore.syncFromServer()
-  // 同步后为所有无消息的对话从服务端加载消息
-  await Promise.all(
-    chatStore.conversations
-      .filter((c) => c.messages.length === 0)
-      .map(async (conv) => {
-        const full = await chatApi.fetchConversation(conv.id)
-        if (full) {
-          conv.messages = full.messages
-        }
-      }),
-  )
+  // 仅为当前激活对话按需加载消息
+  const active = getActiveConversation()
+  if (active && active.messages.length === 0) {
+    const full = await chatApi.fetchConversation(active.id)
+    if (full) active.messages = full.messages
+  }
 })
 
 onUnmounted(() => {
   abort()
+})
+
+// 切换对话时按需加载消息
+watch(activeConversationId, async (id) => {
+  if (!id) return
+  const conv = chatStore.conversations.find((c) => c.id === id)
+  if (conv && conv.messages.length === 0) {
+    const full = await chatApi.fetchConversation(conv.id)
+    if (full) conv.messages = full.messages
+  }
 })
 
 const handleSendMessage = async (content: string) => {

@@ -141,8 +141,8 @@ export const useChatStore = defineStore(
       if (Date.now() - lastSyncTime < SYNC_CACHE_TTL) return
       try {
         const serverList = await chatApi.fetchConversations()
-        if (serverList.length === 0) return
         lastSyncTime = Date.now()
+        if (serverList.length === 0) return
         // 以服务端数据为准：保留本地独有的消息内容，但元信息以服务端为准
         const localMap = new Map(conversations.value.map((c) => [c.id, c]))
         conversations.value = serverList.map((s) => {
@@ -185,6 +185,27 @@ export const useChatStore = defineStore(
     persist: {
       key: STORAGE_KEYS.chat,
       storage: safeStorage,
+      // 消息体不持久化，仅保留对话元数据，消息由后端按需加载
+      serializer: {
+        serialize: (state: any) =>
+          JSON.stringify({
+            ...state,
+            conversations: (state.conversations || []).map((c: any) => ({
+              ...c,
+              messages: [],
+            })),
+          }),
+        deserialize: (raw: string) => {
+          const parsed = JSON.parse(raw)
+          if (parsed.conversations) {
+            parsed.conversations = parsed.conversations.map((c: any) => ({
+              ...c,
+              messages: c.messages || [],
+            }))
+          }
+          return parsed
+        },
+      },
       afterHydrate(ctx) {
         const state = ctx.store.$state
         if (

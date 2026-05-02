@@ -35,8 +35,9 @@ const userAvatar = computed(() => userStore.userInfo.avatar || '')
 
 
 // 计算属性：AI 消息的 Markdown 渲染内容
+// 流式输出中不解析 markdown（结果被丢弃，浪费 CPU）
 const renderedContent = computed(() => {
-  if (isAssistant.value && hasContent.value) {
+  if (isAssistant.value && hasContent.value && !props.message.isStreaming) {
     return renderMarkdown(props.message.content)
   }
   return ''
