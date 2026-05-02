@@ -1,0 +1,204 @@
+/* ========================================
+ * 响应式样式 — 所有 @media 查询集中管理
+ * 作为全局非 scoped 样式，用 !important 覆盖组件 scoped 样式
+ * ======================================== */
+
+/* ---- 平板 / 窄屏桌面 (≤768px) ---- */
+/* 侧边栏仍为 flex 子项，保留宽度过渡动画 */
+@media (max-width: 768px) {
+  .app-layout {
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+
+  /* ---- 侧边栏（仅展开时缩窄，收起时仍由 scoped .collapsed 控制 width: 0） ---- */
+  .sidebar-wrapper:not(.collapsed) {
+    width: 240px !important;
+  }
+
+  .sidebar-wrapper:not(.collapsed) .sidebar {
+    width: 240px !important;
+  }
+
+  /* ---- 聊天 ---- */
+  .chat-messages {
+    padding: 12px !important;
+    overflow-x: hidden !important;
+  }
+
+  .message-body {
+    max-width: 85% !important;
+  }
+
+  .input-section {
+    padding: 12px !important;
+  }
+
+  /* ---- 登录 ---- */
+  .login-box {
+    max-width: 420px;
+    width: calc(100% - 32px) !important;
+    padding: 24px !important;
+  }
+
+  /* ---- 设置对话框 ---- */
+  .panel-dialog {
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+
+  .panel-body {
+    flex-direction: column !important;
+  }
+
+  .panel-sidebar {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-color);
+    overflow-y: visible !important;
+    flex-shrink: 0 !important;
+  }
+
+  .panel-content {
+    padding: 16px !important;
+  }
+
+  /* 设置菜单 — 横向 tab 模式 */
+  .settings-menu {
+    display: flex !important;
+    flex-direction: row !important;
+    padding: 0 !important;
+  }
+
+  .menu-item {
+    border-left: none !important;
+    border-bottom: 3px solid transparent;
+    padding: 12px 16px !important;
+    white-space: nowrap;
+  }
+
+  .menu-item.active {
+    border-left-color: transparent !important;
+    border-bottom-color: var(--primary-color) !important;
+  }
+
+  .settings-content {
+    padding: 16px;
+  }
+
+  /* 对话项更多按钮常显（触屏无 hover） */
+  .item-more-btn {
+    opacity: 1 !important;
+  }
+
+  /* 代码块不撑开消息气泡（flex 子项默认 min-width: auto） */
+  .message-content {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .markdown-body .code-block {
+    max-width: 100%;
+  }
+
+  .markdown-body pre {
+    max-width: 100%;
+  }
+
+  .markdown-body pre code {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ---- 手机抽屉模式 (≤540px) ---- */
+/* 侧边栏改为绝对定位抽屉覆盖，transform 滑入滑出 */
+@media (max-width: 540px) {
+  /* ---- 侧边栏：抽屉覆盖 ---- */
+  .sidebar-wrapper {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 200;
+    width: calc(100vw - 48px) !important;
+    flex-shrink: unset !important;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: none !important;
+  }
+
+  .sidebar-wrapper:not(.collapsed) {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s 0s !important;
+  }
+
+  .sidebar {
+    width: 100% !important;
+  }
+
+}
+
+/* ---- 小屏手机 (≤480px) ---- */
+@media (max-width: 480px) {
+  /* ---- 聊天 ---- */
+  .chat-messages {
+    padding: 8px !important;
+  }
+
+  .message-body {
+    max-width: 90% !important;
+  }
+
+  .message-avatar {
+    margin: 0 6px !important;
+  }
+
+  .message-avatar .el-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .message-content {
+    padding: 10px 14px !important;
+  }
+
+  .input-section {
+    padding: 8px !important;
+  }
+
+  .input-container {
+    padding: 8px !important;
+    gap: 8px !important;
+  }
+
+  .send-btn,
+  .stop-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+
+  /* ---- 顶部栏 ---- */
+  .top-bar {
+    padding: 0 12px !important;
+    height: 48px !important;
+  }
+
+  /* ---- 登录 ---- */
+  .login-box {
+    padding: 20px !important;
+  }
+
+  /* ---- 设置对话框 ---- */
+  .panel-header {
+    padding: 14px 16px !important;
+  }
+
+  .panel-content {
+    padding: 12px !important;
+  }
+}
