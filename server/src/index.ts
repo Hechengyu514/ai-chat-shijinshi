@@ -2,40 +2,48 @@
  * 服务入口
  * 启动 Express 服务器，挂载中间件和路由
  */
-import 'dotenv/config' // 加载 .env 文件中的环境变量（必须在最前面）
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import authRoutes from './auth.js'
 import chatRoutes from './chat.js'
 import { logger } from './logger.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // ---- CORS 配置 ----
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
-  : ['http://localhost:5173']
+  : []
 
 // ---- 中间件 ----
-app.use(cors({ origin: ALLOWED_ORIGINS }))
-app.use(express.json({ limit: '5mb' })) // 解析 JSON 请求体（支持头像 Base64）
+// 生产环境下前后端同域名，不需要 CORS；ALLOWED_ORIGINS 未配置时自动关闭
+if (ALLOWED_ORIGINS.length > 0) {
+  app.use(cors({ origin: ALLOWED_ORIGINS }))
+}
+app.use(express.json({ limit: '5mb' }))
 
-// ---- 根路径友好提示 ----
-app.get('/', (_req, res) => {
-  res.json({ message: 'AI Chat API 服务运行中', frontend: 'http://localhost:5173', docs: '/api/health' })
-})
+// ---- 静态文件（前端构建产物） ----
+const staticDir = path.resolve(__dirname, '../../dist')
+app.use(express.static(staticDir))
 
-// ---- 健康检查（必须放在鉴权路由之前） ----
+// ---- API 路由 ----
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: Date.now() })
 })
+app.use(authRoutes)
+app.use(chatRoutes)
 
-// ---- 路由 ----
-app.use(authRoutes) // 注册 + 登录（无需鉴权）
-app.use(chatRoutes) // 对话接口（需要 JWT 鉴权）
+// ---- SPA fallback：所有非 API 请求返回 index.html ----
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(staticDir, 'index.html'))
+})
 
 // ---- 启动 ----
 app.listen(PORT, () => {
-  logger.info(`后端服务已启动: http://localhost:${PORT}`)
+  logger.info(`服务已启动: http://localhost:${PORT}`)
 })
