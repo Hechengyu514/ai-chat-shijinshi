@@ -4,19 +4,19 @@
 
 ## 技术栈
 
-| 层 | 技术 |
-| --- | --- |
-| 前端框架 | Vue 3 + TypeScript |
-| UI 组件库 | Element Plus |
-| 状态管理 | Pinia + pinia-plugin-persistedstate |
-| 路由 | Vue Router 4 |
-| HTTP 客户端 | Axios |
-| 构建工具 | Vite |
-| 后端框架 | Express |
-| 数据库 | SQLite + Prisma ORM |
-| 认证 | JWT + bcryptjs |
-| AI 接口 | DeepSeek（OpenAI 兼容） |
-| 测试 | Vitest + happy-dom |
+| 层          | 技术                                |
+| ----------- | ----------------------------------- |
+| 前端框架    | Vue 3 + TypeScript                  |
+| UI 组件库   | Element Plus                        |
+| 状态管理    | Pinia + pinia-plugin-persistedstate |
+| 路由        | Vue Router 4                        |
+| HTTP 客户端 | Axios                               |
+| 构建工具    | Vite                                |
+| 后端框架    | Express                             |
+| 数据库      | SQLite + Prisma ORM                 |
+| 认证        | JWT + bcryptjs                      |
+| AI 接口     | DeepSeek（OpenAI 兼容）             |
+| 测试        | Vitest + happy-dom                  |
 
 ## 功能特性
 
@@ -85,7 +85,7 @@ ChatView (UI 层)
 
 ```
 ├── src/
-│   ├── ai/                        # 🆕 AI SDK 层
+│   ├── ai/                          # AI SDK 层
 │   │   ├── core/
 │   │   │   ├── AIClient.ts          # 核心客户端（中间件管道 + 流式请求）
 │   │   │   ├── StreamParser.ts      # SSE 流解析器（纯函数）
@@ -101,17 +101,17 @@ ChatView (UI 层)
 │   │   │   └── __tests__/           # retry 单测
 │   │   └── index.ts                 # SDK 统一导出
 │   │
-│   ├── api/                       # HTTP 请求层
+│   ├── api/                         # HTTP 请求层
 │   │   ├── client.ts                # Axios 实例、token 缓存、拦截器
 │   │   ├── auth.ts                  # 认证 API
 │   │   └── chat.ts                  # 对话 API（SSE 解析已迁移至 parseSSEStream）
 │   │
-│   ├── assets/                    # 图片、全局样式
-│   ├── components/                # UI 组件
+│   ├── assets/                      # 图片、全局样式
+│   ├── components/                  # UI 组件
 │   │   ├── chat/                    # ChatMessage / ChatInput / ConversationList / ConversationItem
 │   │   ├── common/                  # ErrorBoundary / AvatarCropper / PanelDialog / EmptyState
 │   │   └── settings/                # 设置面板
-│   ├── composables/               # 组合式函数
+│   ├── composables/                 # 组合式函数
 │   │   ├── useChatStream.ts         # ⚠️ deprecated → 请使用 @/ai 中的 useChat
 │   │   ├── useMarkdown.ts           # Markdown 渲染
 │   │   ├── useAutoScroll.ts         # 消息自动滚动
@@ -159,9 +159,9 @@ cp server/.env.example server/.env
 
 编辑 `server/.env`：
 
-| 变量 | 说明 |
-| --- | --- |
-| `JWT_SECRET` | 随机字符串 |
+| 变量               | 说明                                              |
+| ------------------ | ------------------------------------------------- |
+| `JWT_SECRET`       | 随机字符串                                        |
 | `DEEPSEEK_API_KEY` | DeepSeek API Key（https://platform.deepseek.com） |
 
 ### 3. 初始化数据库
@@ -203,53 +203,3 @@ Vercel（前端静态资源）──► Render（后端 Express API）
                               │
                          SQLite（本地文件，免费层重启后数据丢失）
 ```
-
-### 前端 → Vercel
-
-1. 将项目推送到 GitHub 仓库
-2. 在 [vercel.com](https://vercel.com) 用 GitHub 登录，点击 **New Project**
-3. 选择仓库，Vercel 自动识别 Vite 项目
-4. 配置环境变量：
-
-| 变量 | 值 |
-| --- | --- |
-| `VITE_API_BASE_URL` | `https://你的后端域名.onrender.com`（先填占位，等后端部署完再回来改） |
-
-5. 点击 **Deploy**，等待 1-2 分钟
-
-### 后端 → Render
-
-1. 在 [render.com](https://render.com) 用 GitHub 登录，点击 **New Web Service**
-2. 选择同一个 GitHub 仓库
-3. 配置：
-
-| 配置项 | 值 |
-| --- | --- |
-| **Root Directory** | `server` |
-| **Runtime** | Node |
-| **Build Command** | `npm install && npx prisma generate && npx prisma db push && npx tsc` |
-| **Start Command** | `node dist/index.js` |
-| **Plan** | Free |
-
-4. 添加环境变量（**Environment Variables**）：
-
-| 变量 | 说明 |
-| --- | --- |
-| `JWT_SECRET` | 随机字符串（可用 `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` 生成） |
-| `DEEPSEEK_API_KEY` | DeepSeek API Key |
-| `DEEPSEEK_BASE_URL` | `https://api.deepseek.com` |
-| `DEEPSEEK_MODEL` | `deepseek-chat` |
-| `ALLOWED_ORIGINS` | `https://你的前端域名.vercel.app` |
-| `NODE_ENV` | `production` |
-
-5. 点击 **Deploy Web Service**，等待 3-5 分钟
-
-### 回填前端环境变量
-
-后端部署完成后，记下 Render 分配的域名（如 `https://ai-chat-xxxx.onrender.com`），回到 Vercel 项目设置 → Environment Variables，将 `VITE_API_BASE_URL` 设为该地址，重新部署（Vercel 会自动触发）。
-
-### 已知限制
-
-- **Render 免费层**：15 分钟无请求后服务休眠，下次请求需冷启动约 30 秒
-- **SQLite 数据**：免费层无持久化磁盘，每次重新部署数据会丢失
-- **升级方案**：将数据库改为 Render PostgreSQL（免费 90 天）或 Turso（免费 9GB SQLite Cloud）
