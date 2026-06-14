@@ -70,3 +70,9 @@ ehthumbs.db
 *.tmp
 *.temp
 *.bak
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
